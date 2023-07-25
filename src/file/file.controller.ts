@@ -15,6 +15,7 @@ import { Response } from "express"
 import * as fs from "fs"
 import { writeFile } from "fs/promises"
 import * as path from "path"
+import * as AWS from "aws-sdk" // Import AWS SDK
 
 @Controller("files")
 export class FileController {
@@ -38,19 +39,30 @@ export class FileController {
   @Put(":filename")
   @UseInterceptors(FileInterceptor("pdf"))
   async saveFile(@Body() requestBody: { pdfData: number[] }) {
-    const uint8Array = new Uint8Array(requestBody.pdfData) // Convert array back to Uint8Array
+    const uint8Array = new Uint8Array(requestBody.pdfData)
+
     try {
-      const filePath = `files/example.pdf`
+      const s3 = new AWS.S3() // Create S3 instance
 
-      await writeFile(filePath, uint8Array) // Save the Uint8Array to the file path
+      // Upload the PDF file to S3
+      const bucketName = "nestjs-bhumfile-bucket"
+      const key = "example.pdf"
+      await s3
+        .putObject({
+          Bucket: bucketName,
+          Key: key,
+          Body: Buffer.from(uint8Array),
+          ContentType: "application/pdf",
+          ContentDisposition: "attachment; filename=example.pdf",
+        })
+        .promise()
 
-      const pdfData = requestBody.pdfData
-
-      const link = `/files/example.pdf`
+      // Save the file details to the database
+      const link = `https://${bucketName}.s3.amazonaws.com/${key}`
       const filledPDF = new FilledPDF()
       filledPDF.filename = "example.pdf"
       filledPDF.link = link
-      filledPDF.pdfData = pdfData
+      filledPDF.pdfData = requestBody.pdfData
       await this.filledPDFRepository.save(filledPDF)
 
       return "PDF saved successfully"
