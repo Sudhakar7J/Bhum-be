@@ -38,7 +38,6 @@ export class FileController {
   @Put(":filename")
   @UseInterceptors(FileInterceptor("pdf"))
   async saveFile(@Body() requestBody: { pdfData: number[] }) {
-    console.log({ data: requestBody.pdfData })
     const uint8Array = new Uint8Array(requestBody.pdfData) // Convert array back to Uint8Array
     try {
       const filePath = `files/example.pdf`
@@ -56,7 +55,6 @@ export class FileController {
 
       return "PDF saved successfully"
     } catch (error) {
-      console.error("Error saving file:", error)
       throw new Error("Failed to save file")
     }
   }
