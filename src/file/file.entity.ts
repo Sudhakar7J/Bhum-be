@@ -1,16 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
 
 @Entity()
 export class FilledPDF {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  filename: string;
+  filename: string
 
-  @Column('bytea')
-  pdfData: number[];
+  @Column("bytea")
+  pdfData: number[]
 
   @Column()
-  link: string;
+  link: string
 }

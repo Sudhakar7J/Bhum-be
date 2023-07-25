@@ -8,17 +8,13 @@ import { TypeOrmModule } from "@nestjs/typeorm"
   imports: [
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: "postgres.cctzg6zjlm2h.ap-south-1.rds.amazonaws.com",
+      host: "localhost",
+      port: 5432,
       username: "postgres",
       password: "admin",
       database: "postgres",
       entities: [__dirname + "/**/*.entity{.ts,.js}"],
       synchronize: true,
-      extra: {
-        trustServerCertificate: true,
-        Encrypt: true,
-        IntegratedSecurity: false,
-      },
     }),
     FileModule,
   ],
